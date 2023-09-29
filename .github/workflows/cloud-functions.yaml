@@ -10,8 +10,8 @@ on:
 concurrency: ${{ github.ref }}
 
 env:
-  FUNCTION_NAME: strategy-collective-${{ github.ref_name }}
-  PUBLIC_URL: https://us-central1-strategy-collective-381508.cloudfunctions.net/intouch-gmb-${{ github.ref_name }}
+  FUNCTION_NAME: strategy-collective-gmb-${{ github.ref_name }}
+  PUBLIC_URL: https://us-central1-strategy-collective-381508.cloudfunctions.net/strategy-collective-gmb-${{ github.ref_name }}
   GCP_SA: integration-1@strategy-collective-381508.iam.gserviceaccount.com
 
   ENV_FILE: env.yaml
