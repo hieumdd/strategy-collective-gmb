@@ -4,6 +4,7 @@
         "./src/**/*.test.ts"
     ],
     "compilerOptions": {
-        "outDir": "dist"
+        "outDir": "dist",
+        "sourceMap": false
     }
 }
