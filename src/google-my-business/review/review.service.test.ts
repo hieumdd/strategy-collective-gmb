@@ -1,31 +1,16 @@
-import { AxiosInstance } from 'axios';
-
-import { configs } from '../../pipeline/account.const';
-import { getAuthClient } from '../auth/auth.service';
+import { getClient } from '../auth/auth.service';
 import { getReviews } from './review.service';
 
-describe('review', () => {
-    let client: AxiosInstance;
-    const config = configs[1];
+it('getReviews', async () => {
+    const businessId = 'sid@eaglytics-co.net';
+    const client = await getClient(businessId);
 
-    beforeAll(async () => {
-        client = await config.getRefreshToken().then(getAuthClient);
-    });
-
-    it('get-reviews', async () => {
-        const accountId = `108405109682017952426`;
-        const locationId = `locations/15985377062328992273`;
-
-        return getReviews(client, { accountId, location: locationId })
-            .then((reviews) => {
-                console.log(reviews);
-                reviews.forEach((review) => {
-                    expect(review).toBeTruthy();
-                });
-            })
-            .catch((error) => {
-                console.log(error);
-                return Promise.reject(error);
-            });
-    });
+    return await getReviews(client, { accountId: '112530524108083411763', locationId: '6501208319635997893' })
+        .then((reviews) => {
+            expect(reviews).toBeDefined();
+        })
+        .catch((error) => {
+            console.error(error);
+            throw error;
+        });
 });
