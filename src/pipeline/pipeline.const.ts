@@ -11,8 +11,14 @@ export const Location: Pipeline = {
         table: `p_Location__${accountId}`,
         schema: [
             { name: 'name', type: 'STRING' },
-            { name: 'storeCode', type: 'STRING' },
             { name: 'title', type: 'STRING' },
+            { name: 'storeCode', type: 'STRING' },
+            { name: 'locationId', type: 'STRING' },
+            {
+                name: 'storefrontAddress',
+                type: 'RECORD',
+                fields: [{ name: 'addressLines', type: 'STRING', mode: 'REPEATED' }],
+            },
         ],
     }),
 };
