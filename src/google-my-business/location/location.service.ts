@@ -1,14 +1,11 @@
 import { OAuth2Client } from 'google-auth-library';
-import { GaxiosError } from 'gaxios';
 
 import { getLogger } from '../../logging.service';
 import { Location } from './location.type';
 
 const logger = getLogger(__filename);
 
-type GetLocationsOptions = {
-    accountId: string;
-};
+type GetLocationsOptions = { accountId: string };
 
 export const getLocations = async (client: OAuth2Client, { accountId }: GetLocationsOptions) => {
     const get = async (pageToken?: string): Promise<Location[]> => {
@@ -23,20 +20,16 @@ export const getLocations = async (client: OAuth2Client, { accountId }: GetLocat
             })
             .then((response) => response.data)
             .catch((error) => {
-                if (error instanceof GaxiosError && error.status === 403) {
-                    logger.warn(`Get Locations Error`, { error, accountId });
-                    return { locations: [], nextPageToken: undefined };
-                }
-                throw error;
+                logger.warn(`Get Locations Error`, { error, accountId });
+                return { locations: [], nextPageToken: undefined };
             });
 
         return nextPageToken ? [...locations, ...(await get(nextPageToken))] : locations;
     };
 
-    return await get().then((locations) => {
-        return locations.map((location) => {
-            const [_, locationId] = location.name.split('/');
-            return { ...location, locationId };
-        });
+    const locations = await get();
+    return locations.map((location) => {
+        const [_, locationId] = location.name.split('/');
+        return { ...location, locationId };
     });
 };

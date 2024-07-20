@@ -49,15 +49,11 @@ export const runLocationPipeline = async (options: RunLocationPipelineOptions) =
     const client = await getClient(businessId);
 
     return await Promise.all([
-        getInsights(client, { locationId }).then((insights) => {
-            return insights.length > 0
-                ? insert(insights, pipelines.Insight.getLoadConfig(accountId)).then(() => insights.length)
-                : 0;
+        getInsights(client, { locationId }).then(async (insights) => {
+            return await insert(insights, pipelines.Insight.getLoadConfig(accountId)).then(() => insights.length);
         }),
-        getReviews(client, { accountId, locationId }).then((reviews) => {
-            return reviews.length > 0
-                ? insert(reviews, pipelines.Review.getLoadConfig(accountId)).then(() => reviews.length)
-                : 0;
+        getReviews(client, { accountId, locationId }).then(async (reviews) => {
+            return await insert(reviews, pipelines.Review.getLoadConfig(accountId)).then(() => reviews.length);
         }),
     ]);
 };

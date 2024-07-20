@@ -40,6 +40,9 @@ export const load = async (rows: Record<string, any>[], { table, schema }: LoadC
 };
 
 export const insert = async (rows: Record<string, any>[], { table, schema }: LoadConfig) => {
+    if (rows.length === 0) {
+        return;
+    }
     return await client
         .dataset(DATASET)
         .table(table)

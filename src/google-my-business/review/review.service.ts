@@ -1,5 +1,4 @@
 import { OAuth2Client } from 'google-auth-library';
-import { GaxiosError } from 'gaxios';
 
 import { getLogger } from '../../logging.service';
 import { Review } from './review.type';
@@ -14,7 +13,7 @@ type GetReviewsOptions = {
 export const getReviews = async (client: OAuth2Client, options: GetReviewsOptions) => {
     const { accountId, locationId } = options;
 
-    const _get = async (pageToken?: string): Promise<Review[]> => {
+    const get = async (pageToken?: string): Promise<Review[]> => {
         const { reviews = [], nextPageToken } = await client
             .request<{ reviews: Review[]; nextPageToken?: string }>({
                 method: 'GET',
@@ -23,15 +22,13 @@ export const getReviews = async (client: OAuth2Client, options: GetReviewsOption
             })
             .then((response) => response.data)
             .catch((error) => {
-                if (error instanceof GaxiosError && error.status === 403) {
-                    logger.warn(`Get Reviews Error`, { error, accountId, locationId });
-                    return { reviews: [], nextPageToken: undefined };
-                }
-                throw error;
+                logger.warn(`Get Reviews Error`, { error, accountId, locationId });
+                return { reviews: [], nextPageToken: undefined };
             });
 
-        return nextPageToken ? [...reviews, ...(await _get(nextPageToken))] : reviews || [];
+        return nextPageToken ? [...reviews, ...(await get(nextPageToken))] : reviews || [];
     };
 
-    return await _get().then((rows) => (rows || []).map((row) => ({ ...row, accountId, locationId })));
+    const reviews = await get();
+    return (reviews || []).map((review) => ({ ...review, accountId, locationId }));
 };

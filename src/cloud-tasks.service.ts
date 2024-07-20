@@ -29,5 +29,5 @@ export const createTask = async <P>(endpoint: string, payload: P, nameFn: (p: P)
         },
     };
 
-    return client.createTask(task).then(([response]) => response);
+    return await client.createTask(task).then(([response]) => response);
 };

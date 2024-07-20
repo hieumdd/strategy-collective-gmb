@@ -6,9 +6,8 @@ import { Business } from './business.type';
 const collection = () => firestore.collection('google-business') as CollectionReference<Business>;
 
 export const getAll = async () => {
-    return await collection()
-        .get()
-        .then((snapshot) => snapshot.docs);
+    const snapshot = await collection().get();
+    return snapshot.docs;
 };
 
 export const getOne = async (id: string) => {

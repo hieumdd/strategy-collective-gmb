@@ -47,7 +47,7 @@ export const getInsights = async (client: OAuth2Client, { locationId }: GetInsig
     const start = dayjs.utc().subtract(1, 'year');
     const end = dayjs.utc();
 
-    return await client
+    const [error, data] = await client
         .request<MultiDailyMetricResponse>({
             method: 'GET',
             url: `https://businessprofileperformance.googleapis.com/v1/locations/${locationId}:fetchMultiDailyMetricsTimeSeries`,
@@ -61,29 +61,28 @@ export const getInsights = async (client: OAuth2Client, { locationId }: GetInsig
                 'dailyRange.end_date.day': end.date(),
             },
         })
-        .then((response) => response.data)
-        .then((data) => {
-            return data.multiDailyMetricTimeSeries.flatMap((multiDailyMetrics) => {
-                return multiDailyMetrics.dailyMetricTimeSeries.flatMap((metric) => {
-                    return metric.timeSeries.datedValues.map(({ date, value }) => ({
-                        location_id: locationId,
-                        metric: metric.dailyMetric,
-                        date: dayjs()
-                            .year(date.year)
-                            .month(date.month - 1)
-                            .date(date.day)
-                            .format('YYYY-MM-DD'),
-                        value,
-                    }));
-                });
-            });
-        })
-        .then((rows) => rows.filter((row) => !!row.value))
+        .then((response) => [null, response.data] as const)
         .catch((error) => {
-            if (error instanceof GaxiosError && error.status === 403) {
-                logger.warn(`Get Locations Error`, { error, locationId });
-                return [];
-            }
-            throw error;
+            logger.warn(`Get Locations Error`, { error, locationId });
+            return [<GaxiosError>error, null] as const;
         });
+
+    if (error && !data) {
+        return [];
+    }
+
+    return data.multiDailyMetricTimeSeries.flatMap((multiDailyMetrics) => {
+        return multiDailyMetrics.dailyMetricTimeSeries.flatMap((metric) => {
+            return metric.timeSeries.datedValues.map(({ date, value }) => ({
+                location_id: locationId,
+                metric: metric.dailyMetric,
+                date: dayjs()
+                    .year(date.year)
+                    .month(date.month - 1)
+                    .date(date.day)
+                    .format('YYYY-MM-DD'),
+                value,
+            }));
+        });
+    });
 };

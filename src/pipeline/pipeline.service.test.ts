@@ -1,10 +1,13 @@
 import { runLocationPipeline, initiatePipelines } from './pipeline.service';
 
 it('initiatePipelines', async () => {
-    return await initiatePipelines().catch((error) => {
+    try {
+        const results = await initiatePipelines();
+        expect(results).toBeTruthy();
+    } catch (error) {
         console.error(error);
         throw error;
-    });
+    }
 });
 
 it('pipeline/location', async () => {
@@ -14,13 +17,12 @@ it('pipeline/location', async () => {
         locationId: '6501208319635997893',
     };
 
-    return await runLocationPipeline(options)
-        .then(([insights, reviews]) => {
-            expect(insights).toBeGreaterThanOrEqual(0);
-            expect(reviews).toBeGreaterThanOrEqual(0);
-        })
-        .catch((error) => {
-            console.error(error);
-            throw error;
-        });
+    try {
+        const [insights, reviews] = await runLocationPipeline(options);
+        expect(insights).toBeGreaterThanOrEqual(0);
+        expect(reviews).toBeGreaterThanOrEqual(0);
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
 });

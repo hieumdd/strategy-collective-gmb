@@ -15,11 +15,9 @@ export const getAccounts = async (client: OAuth2Client) => {
         return nextPageToken ? [...accounts, ...(await get(nextPageToken))] : accounts;
     };
 
-    return await get().then((accounts) => {
-        return accounts.map((account) => {
-            const [_, accountId] = account.name.split('/');
-            return { ...account, accountId };
-        });
-        // .filter((account) => account.type !== 'PERSONAL');
+    const accounts = await get();
+    return accounts.map((account) => {
+        const [_, accountId] = account.name.split('/');
+        return { ...account, accountId };
     });
 };
