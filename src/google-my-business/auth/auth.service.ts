@@ -26,6 +26,7 @@ export const getAuthorizationURL = () => {
         'openid',
         'https://www.googleapis.com/auth/userinfo.email',
         'https://www.googleapis.com/auth/business.manage',
+        'https://www.googleapis.com/auth/cloud-platform',
     ];
     return oauth2Client().generateAuthUrl({ scope, access_type: 'offline', prompt: 'consent' });
 };
